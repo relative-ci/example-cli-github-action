@@ -8,6 +8,7 @@ import './index.css';
 
 const App = () => (
   <Layout>
+    <h1>Test frok</h1>
     <Examples data={data} />
   </Layout>
 );
