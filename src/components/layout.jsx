@@ -20,6 +20,9 @@ export const Layout = (props) => {
       <main className={css.main}>
         {children}
       </main>
+      <footer className={css.footer}>
+        Made by <a href="https://relative-ci.com">RelativeCI</a>
+      </footer>
     </div>
   );
 };
