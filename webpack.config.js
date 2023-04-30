@@ -95,6 +95,7 @@ module.exports = (_, { mode }) => {
       }),
     ],
     devServer: {
+      port: 9000,
       hot: true,
       inline: true
     }
