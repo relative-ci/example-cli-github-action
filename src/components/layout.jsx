@@ -1,5 +1,6 @@
 import React from 'react';
 import { Typography } from 'antd'
+import { Factory } from 'lucide-react';
 
 import logoUrl from '../assets/relative-ci--logo.png';
 import css from './layout.module.css';
@@ -21,7 +22,10 @@ export const Layout = (props) => {
         {children}
       </main>
       <footer className={css.footer}>
-        Made by <a href="https://relative-ci.com">RelativeCI</a>
+        <Factory width="32" />
+        <Typography.Paragraph>
+            Made by <a href="https://relative-ci.com">RelativeCI</a>
+        </Typography.Paragraph>
       </footer>
     </div>
   );
