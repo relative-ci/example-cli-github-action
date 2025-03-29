@@ -9,6 +9,8 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - uses: hmarr/debug-action@v3
+
       # Cache packages when the branch is not update-dependencies or renovate-*
       - name: Resolve caching
         id: cache
