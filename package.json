@@ -25,7 +25,7 @@
     "@babel/eslint-parser": "7.27.0",
     "@babel/preset-env": "7.26.9",
     "@babel/preset-react": "7.26.3",
-    "@relative-ci/agent": "4.1.9",
+    "@relative-ci/agent": "4.3.1",
     "babel-loader": "10.0.0",
     "css-loader": "7.1.2",
     "eslint": "8.8.0",
