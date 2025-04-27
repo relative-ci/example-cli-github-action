@@ -1,0 +1,47 @@
+name: build
+
+on: 
+  push:
+    branches:
+      - main
+  pull_request:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: hmarr/debug-action@v3
+
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: '.nvmrc'
+          cache: 'npm'
+
+      # Install dependencies
+      - run: npm ci
+
+      # Lint
+      - run: npm run lint -- --quiet
+
+      # Build and output webpack stats to artifacts/webpack-stats.json
+      - run: npm run build
+
+      - name: Send stats to relative-ci.com
+        run: npx relative-ci-agent
+        env:
+          RELATIVE_CI_KEY: ${{ secrets.RELATIVE_CI_KEY }}
+          DEBUG: ${{ secrets.DEBUG }}
+
+      - name: Archive production artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-artifacts
+          path: |
+            webpack-stats.json
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: build
+          path: ./dist

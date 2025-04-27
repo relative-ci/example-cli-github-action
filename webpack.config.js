@@ -1,103 +1,57 @@
 const path = require('path');
 const HtmlPlugin = require('html-webpack-plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
-const CopyPlugin = require('copy-webpack-plugin');
+
+const packageInfo = require('./package.json');
 
 const SRC_DIR = path.resolve(__dirname, 'src');
 const OUT_DIR = path.resolve(__dirname, 'dist');
 
-module.exports = (_, { mode }) => {
-  const isProduction = mode === 'production';
-
-  return {
-    context: SRC_DIR,
-    entry: './index.jsx',
-    output: {
-      path: OUT_DIR,
-      filename: isProduction ? '[name].[contenthash:5].js': '[name].js',
-    },
-    resolve: {
-      extensions: ['.jsx', '.js', '.json'],
-      alias: {
-        '@babel/runtime/helpers/esm': '@babel/runtime/helpers/',
+module.exports = {
+  context: SRC_DIR,
+  entry: './index.jsx',
+  output: {
+    path: OUT_DIR,
+    filename: '[name].bundle.[contenthash].js',
+    chunkFilename: '[name].chunk.[contenthash].js',
+    assetModuleFilename: '[path][name].[contenthash][ext][query]',
+    hashDigestLength: 8,
+  },
+  resolve: {
+    extensions: ['.jsx', '.js', '.json'],
+  },
+  module: {
+    rules: [
+      {
+        test: /\.jsx?$/,
+        use: 'babel-loader',
+        include: [SRC_DIR],
       },
-    },
-    module: {
-      rules: [
-        {
-          test: /\.jsx?$/,
-          loader: 'babel-loader',
-          include: [SRC_DIR],
-        },
-        {
-          test: /\.css$/,
-          use: [
-            {
-              loader: MiniCssExtractPlugin.loader,
-              options: {
-                hmr: !isProduction,
-              },
-            },
-            'css-loader',
-            {
-              loader: 'postcss-loader',
-              options: {
-                postcssOptions: {
-                  plugins: [
-                    require('autoprefixer'),
-                    ... isProduction ? [require('cssnano')] : [],
-                  ],
-                },
-              },
-            },
-          ],
-          include: [SRC_DIR],
-        },
-        {
-          test: /\.(png|jpe?g|webp|gif)$/,
-          loader: 'file-loader',
-          options: {
-            name: isProduction ? '[path][name].[contenthash:5].[ext]' : '[path][name].[ext]',
-          },
-          include: [SRC_DIR],
-        },
-        {
-          test: /\.inline.svg$/,
-          use: ['@svgr/webpack'],
-        }
-      ],
-    },
-    optimization: {
-      splitChunks: {
-        cacheGroups: {
-          commons: {
-            test: /[\\/]node_modules[\\/]/,
-            name: 'vendors',
-            chunks: 'all'
-          },
-        },
-      },
-    },
-    plugins: [
-      new HtmlPlugin({
-        template: './index.html',
-        filename: 'index.html',
-      }),
-      new MiniCssExtractPlugin({
-        filename: isProduction ? '[name].[contenthash:5].css': '[name].css',
-      }),
-      new CopyPlugin({
-        patterns: [
-          {
-            from: path.resolve(__dirname, 'public'),
-          },
+      {
+        test: /\.css$/,
+        use: [
+          MiniCssExtractPlugin.loader,
+          'css-loader',
         ],
-      }),
+      },
+      {
+        test: /\.(png|svg|jpg|jpeg|gif)$/i,
+        type: 'asset/resource',
+      },
     ],
-    devServer: {
-      port: 9000,
-      hot: true,
-      inline: true
-    }
-  };
+  },
+  plugins: [
+    new HtmlPlugin({
+      title: packageInfo.description,
+      template: './index.html',
+      publicPath: '/',
+    }),
+    new MiniCssExtractPlugin({
+      filename: '[name].bundle.[contenthash].css',
+      chunkFilename: '[name].chunk.[contenthash].css',
+    }),
+  ],
+  devServer: {
+    historyApiFallback: true,
+  },
 };
